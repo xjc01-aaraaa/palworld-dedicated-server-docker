@@ -19,10 +19,11 @@ rconcli() {
         return
     fi
 
-    # Edge case for broadcast because it doesn't support spaces in the message
     if [[ ${cmd,,} == broadcast* ]]; then
-        cmd=${cmd#broadcast }  # Remove 'broadcast ' from the command (also removes the space after 'broadcast')
-        output=$(rcon_broadcast -c "${RCON_CONFIG_FILE}" "${cmd}" | tr -d '\0')
+        output=$(rcon -c "${RCON_CONFIG_FILE}" "${cmd}" | tr -d '\0')
+        if [[ ${output} == Broadcasted:* ]]; then
+            output="Broadcasted: ${cmd#broadcast }"
+        fi
     else
         output=$(rcon -c "${RCON_CONFIG_FILE}" "${cmd}" | tr -d '\0')
     fi
