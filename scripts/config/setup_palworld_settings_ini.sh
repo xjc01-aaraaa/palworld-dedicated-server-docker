@@ -80,7 +80,14 @@ function setup_palworld_settings_ini(){
     check_and_export "other"  "Region" "${REGION}" ""
     check_and_export "bool"   "bUseAuth" "${USE_AUTH}" "true"
     check_and_export "other"  "BanListURL" "${BAN_LIST_URL}" ""
+    check_and_export "bool"   "RESTAPIEnabled" "${REST_API_ENABLED}" "false"
+    check_and_export "int"    "RESTAPIPort" "${REST_API_PORT}" "8212"
     check_and_export "bool"   "bShowPlayerList" "${SHOW_PLAYER_LIST}" "true"
+    allow_connect_platform_options=("Steam")
+    check_and_export "list"   "AllowConnectPlatform" "${ALLOW_CONNECT_PLATFORM}" "Steam" "${allow_connect_platform_options[@]}"
+    check_and_export "bool"   "bIsUseBackupSaveData" "${IS_USE_BACKUP_SAVE_DATA}" "true"
+    log_format_type_options=("json" "text")
+    check_and_export "list"   "LogFormatType" "${LOG_FORMAT_TYPE}" "json" "${log_format_type_options[@]}"
 
     envsubst < "${GAME_SETTINGS_FILE}.tmp" > "${GAME_SETTINGS_FILE}" && rm "${GAME_SETTINGS_FILE}.tmp"
 

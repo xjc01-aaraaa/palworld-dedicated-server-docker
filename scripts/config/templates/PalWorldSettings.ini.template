@@ -62,5 +62,10 @@ RCONPort=${RCONPort},
 Region=${Region},
 bUseAuth=${bUseAuth},
 BanListURL=${BanListURL},
-bShowPlayerList=${bShowPlayerList}
+RESTAPIEnabled=${RESTAPIEnabled},
+RESTAPIPort=${RESTAPIPort},
+bShowPlayerList=${bShowPlayerList},
+AllowConnectPlatform=${AllowConnectPlatform},
+bIsUseBackupSaveData=${bIsUseBackupSaveData},
+LogFormatType=${LogFormatType}
 )

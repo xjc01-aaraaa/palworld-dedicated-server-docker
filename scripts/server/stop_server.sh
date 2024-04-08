@@ -30,8 +30,8 @@ function stop_server() {
     if [[ -n ${RCON_ENABLED} ]] && [[ ${RCON_ENABLED,,} == "true" ]]; then
         rcon_save_and_shutdown
     else
-	    kill -SIGTERM "$(pidof PalServer-Linux-Test)"
-	    tail --pid="$(pidof PalServer-Linux-Test)" -f 2>/dev/null
+	    kill -SIGTERM "$(pidof PalServer-Linux-Shipping)"
+	    tail --pid="$(pidof PalServer-Linux-Shipping)" -f 2>/dev/null
     fi
 
     send_stop_notification
