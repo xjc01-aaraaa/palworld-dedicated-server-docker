@@ -40,12 +40,12 @@ function parse_arguments() {
     # Evaluate the command
     case "$1" in
         init)
-            check_default_credentials
-
             install_server
             update_server
 
             setup_configs
+            check_default_credentials
+
             setup_crons
 
             start_server

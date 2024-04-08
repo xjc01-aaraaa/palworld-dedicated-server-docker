@@ -17,7 +17,8 @@ function setup_configs() {
         log_warning ">> 'SERVER_SETTINGS_MODE' is set to '${SERVER_SETTINGS_MODE}', environment variables NOT used to configure the server!"
 
         # Copy default-config, which comes with SteamCMD to gameserver save location
-        cp "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
+        # -n option will not overwrite an already existing file
+        cp -n "${GAME_ROOT}/DefaultPalWorldSettings.ini" "${GAME_SETTINGS_FILE}"
 
         log_warning ">> File '${GAME_ENGINE_FILE}' has to be manually set by user."
         log_warning ">> File '${GAME_SETTINGS_FILE}' has to be manually set by user."

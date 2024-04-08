@@ -17,7 +17,9 @@ elif [[ "$(id -u steam)" -ne "${PUID}" ]] || [[ "$(id -g steam)" -ne "${PGID}" ]
     groupmod -g "${PGID}" steam && usermod -u "${PUID}" -g "${PGID}" steam
 fi
 
-mkdir -p /palworld/backups
+# Create the necessary directories
+mkdir -p ${GAME_LOG_PATH}
+mkdir -p ${BACKUP_PATH}
 chown -R steam:steam /palworld /home/steam/
 
 # shellcheck disable=SC2317
