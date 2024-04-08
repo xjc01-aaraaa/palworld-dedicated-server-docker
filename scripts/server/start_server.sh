@@ -27,12 +27,22 @@ function start_server() {
         START_OPTIONS+=("-RCONPort=${RCON_PORT}")
     fi
 
+    START_OPTIONS+=("-logformat=json")
+
     send_start_notification
 
-    # Start the player activity monitor with a delay
-    (sleep 5 && start_player_activity_monitor) &
+    timestamp=$(date +%Y%m%d%H%M%S)
 
-    ./PalServer.sh "${START_OPTIONS[@]}"
+    if [ -f "${GAME_LOG_FILE}" ]; then
+        mv "${GAME_LOG_FILE}" "${GAME_LOG_PATH}/${timestamp}_Palworld.log"
+    fi
+
+    touch "${GAME_LOG_FILE}"
+
+    # Start the player activity monitor
+    start_player_activity_monitor &
+
+    ./PalServer.sh "${START_OPTIONS[@]}" | tee -a "${GAME_LOG_FILE}"
 
     popd > /dev/null || exit
 }
