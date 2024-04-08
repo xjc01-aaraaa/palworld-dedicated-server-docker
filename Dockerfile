@@ -1,7 +1,7 @@
 # Description: Dockerfile for Palworld Dedicated Server
 
-# Build the rcon binaries (GORCON and custom rcon broadcast built by @thejcpalma)
-FROM golang:1.22.0-bookworm as rcon-build
+# Build the rcon binary (GORCON) and the steam id 64 to palworld uid binary (by @thejcpalma)
+FROM golang:1.22.2-bookworm as golang-build
 
 WORKDIR /build
 
@@ -19,11 +19,11 @@ RUN curl -fsSLO "$GORCON_RCONCLI_URL" \
  && rm -Rf "$GORCON_RCONCLI_DIR" \
  && go build -v ./cmd/gorcon
 
-WORKDIR /build/custom_rcon_broadcast/
+# Build the steam id 64 to palworld uid binary
+WORKDIR /build/steamid64_to_palworlduid_dir/
 
-# Build the custom rcon broadcast binary
-COPY  /src/custom_rcon_broadcast/ .
-RUN go build -v -o /build/rcon_broadcast main.go
+COPY  /src/steamid64_to_palworlduid/ .
+RUN go build -v -o /build/steamid64_to_palworlduid main.go
 
 # Build the supercronic binary
 FROM debian:bookworm-slim as supercronic-build
@@ -68,9 +68,9 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy the rcon, custom rcon broadcast (to fix spaces in the message) and supercronic binaries
-COPY --from=rcon-build        --chmod=755  /build/gorcon               /usr/local/bin/rcon
-COPY --from=rcon-build        --chmod=755  /build/rcon_broadcast       /usr/local/bin/rcon_broadcast
-COPY --from=supercronic-build --chmod=755  /usr/local/bin/supercronic  /usr/local/bin/supercronic
+COPY --from=golang-build      --chmod=755  /build/gorcon                   /usr/local/bin/rcon
+COPY --from=golang-build      --chmod=755  /build/steamid64_to_palworlduid /usr/local/bin/steamid64_to_palworlduid
+COPY --from=supercronic-build --chmod=755  /usr/local/bin/supercronic      /usr/local/bin/supercronic
 
 ENV APP_ID=2394010
 ENV SERVER_DIR=/home/steam/server
@@ -102,6 +102,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     GAME_CONFIG_PATH="/palworld/Pal/Saved/Config/LinuxServer" \
     GAME_SETTINGS_FILE="/palworld/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini" \
     GAME_ENGINE_FILE="/palworld/Pal/Saved/Config/LinuxServer/Engine.ini" \
+    GAME_LOG_PATH="/palworld/logs" \
+    GAME_LOG_FILE="/palworld/logs/Palworld.log" \
     BACKUP_PATH="/palworld/backups" \
     STEAMCMD_PATH="/home/steam/steamcmd" \
     RCON_CONFIG_FILE="/home/steam/server/configs/rcon.yaml" \
@@ -123,7 +125,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BACKUP_AUTO_CLEAN_AMOUNT_TO_KEEP=72 \
     # Player monitoring settings
     PLAYER_MONITOR_ENABLED=true \
-    PLAYER_MONITOR_INTERVAL=60 \
     # Webhook settings
     WEBHOOK_ENABLED=false \
     WEBHOOK_URL= \
@@ -246,10 +247,15 @@ ENV DEBIAN_FRONTEND=noninteractive \
     REGION= \
     USEAUTH=true \
     BAN_LIST_URL=https://api.palworldgame.com/api/banlist.txt \
-    SHOW_PLAYER_LIST=false
-
+    REST_API_ENABLED=false \
+    REST_API_PORT=8212 \
+    SHOW_PLAYER_LIST=false \
+    ALLOW_CONNECT_PLATFORM=Steam \
+    IS_USE_BACKUP_SAVE_DATA=false \
+    LOG_FORMAT_TYPE=json
 
 EXPOSE 8211/udp
+EXPOSE 8212/tcp
 EXPOSE 25575/tcp
 
 VOLUME ["${GAME_ROOT}"]
